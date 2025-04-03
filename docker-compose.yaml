@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=supplyhubdb'
+      - 'POSTGRES_PASSWORD=supplyhub12345'
+      - 'POSTGRES_USER=supplyhub'
+    ports:
+      - '5432:5432'
