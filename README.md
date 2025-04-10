@@ -9,16 +9,15 @@ O sistema foi desenvolvido para a disciplina de `Programação Orientada a Objet
 - Interface Amigável: Uma interface simples e eficaz para que os usuários possam realizar as operações de forma intuitiva.
 
 ## Tecnologias Utilizadas
-- Linguagem de Programação: Java
-- Framework: Spring Boot (para a construção de APIs)
+- Frontend: React.js
+- Back-end: Java (Spring Boot)
 - Banco de Dados: MySQL/PostgreSQL (em análise)
-- Frontend: React.js ou outro framework moderno (em análise)
-- Ferramentas: Figma para protótipos e design de UI/UX
+- Ferramentas: Figma (UI/UX), GitHub Projects (quadro Kanban)
 
 ## Como Executar o Projeto
 - Clone o repositório:
 ```
-git clone https://github.com/usuario/inventario-estoque.git
+git clone https://github.com/jamillalobo/back-supplyhub.git
 
 ```
 
