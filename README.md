@@ -1,4 +1,5 @@
 - Link do front-end: https://github.com/CaioFurtadoo/SupplyHub
+- Link dos log trackers atualizado: https://drive.google.com/drive/folders/18BUcdpxpvCjsHbENt7K6asfZsgIOjCQl?usp=sharing
 
 # Sistema de Gerenciamento de Inventário de Alimentos
 Este projeto é um sistema de gerenciamento de inventário, focado no controle de estoques e dispensa de frios, carnes e outros alimentos. O objetivo principal é gerenciar e atualizar a quantidade de itens no estoque, garantir a rastreabilidade das baixas de produtos e manter o controle adequado dos insumos para evitar desperdícios e garantir a qualidade dos produtos.
