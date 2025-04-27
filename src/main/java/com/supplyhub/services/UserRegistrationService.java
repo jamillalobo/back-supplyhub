@@ -1,6 +1,7 @@
 package com.supplyhub.services;
 
 import com.supplyhub.dto.RegistrationRequestDto;
+import com.supplyhub.entities.Employee;
 import com.supplyhub.entities.User;
 import com.supplyhub.repositories.UserRepository;
 import jakarta.validation.ValidationException;
@@ -29,6 +30,8 @@ public class UserRegistrationService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setCpf(request.getCpf());
+        System.out.println("request cpf" + request.getCpf());
 
         return userRepository.save(user);
     }

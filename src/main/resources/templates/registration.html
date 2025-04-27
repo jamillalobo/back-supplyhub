@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro com sucesso no SupplyHub!</title>
+</head>
+<body>
+    <section>
+        <h2>Olá, <b th:text="${name}">name</b>!</h2>
+        <p>Gostariamos de informar que a criação do seu perfil no SupplyHub foi realizada com sucesso pela sua empresa! Abaixo segue suas credenciais iniciais.</p>
+        <p>ATENÇÃO: mantenha suas credenciais em um lugar seguro e evite compartilhar essa informação.</p>
+
+        <p>Credenciais de acesso:
+                username: <b th:text="${name}">name</b>
+                senha: <b th:text="${password}">password</b>
+        </p>
+
+        <div>
+            <h4>Atenciosamente,</h4>
+            <img src="images/logo.png" data-th-src="|cid:SupplyHubLogo|" height="40">
+        </div>
+
+    </section>
+</body>
+</html>

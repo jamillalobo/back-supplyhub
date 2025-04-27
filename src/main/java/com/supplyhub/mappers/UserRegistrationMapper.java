@@ -15,6 +15,7 @@ public class UserRegistrationMapper {
         user.setEmail(registrationRequestDto.email());
         user.setUsername(registrationRequestDto.username());
         user.setPassword(registrationRequestDto.password());
+        user.setCpf(registrationRequestDto.cpf());
 
         return user;
     }

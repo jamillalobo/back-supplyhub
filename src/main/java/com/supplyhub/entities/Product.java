@@ -1,6 +1,9 @@
 package com.supplyhub.entities;
 
+import jakarta.persistence.Entity;
+
 import java.util.Date;
+
 
 public class Product {
     private Long id;

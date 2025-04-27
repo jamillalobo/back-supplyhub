@@ -18,11 +18,17 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
 public class User {
 
+    public Long getId() {
+        return id;
+    }
+
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String username;
@@ -32,6 +38,9 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false, unique = true)
+    private String cpf;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
@@ -63,5 +72,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 }
