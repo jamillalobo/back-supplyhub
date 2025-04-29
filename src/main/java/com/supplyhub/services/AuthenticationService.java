@@ -2,7 +2,10 @@ package com.supplyhub.services;
 
 import com.supplyhub.dto.AuthenticationRequestDto;
 import com.supplyhub.dto.AuthenticationResponseDto;
+import com.supplyhub.entities.User;
+import com.supplyhub.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -15,16 +18,21 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public AuthenticationResponseDto authenticate(
             final AuthenticationRequestDto request) {
 
+        User user = userRepository.findByEmail(request.email());
+
         final var authToken = UsernamePasswordAuthenticationToken
-                .unauthenticated(request.username(), request.password());
+                .unauthenticated(user.getUsername(), request.password());
 
         final var authentication = authenticationManager
                 .authenticate(authToken);
 
-        final var token = jwtService.generateToken(request.username());
+        final var token = jwtService.generateToken(user.getUsername());
         return new AuthenticationResponseDto(token);
     }
 }
