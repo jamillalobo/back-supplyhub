@@ -2,7 +2,6 @@ package com.supplyhub.controllers;
 
 import com.supplyhub.dto.RegistrationRequestDto;
 import com.supplyhub.dto.RegistrationResponseDto;
-import com.supplyhub.dto.employee.CreateDataEmployee;
 import com.supplyhub.mappers.UserRegistrationMapper;
 import com.supplyhub.services.UserRegistrationService;
 import jakarta.validation.Valid;

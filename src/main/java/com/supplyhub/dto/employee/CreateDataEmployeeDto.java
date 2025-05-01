@@ -2,9 +2,8 @@ package com.supplyhub.dto.employee;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
-public record CreateDataEmployee(
+public record CreateDataEmployeeDto(
         @NotBlank
         String username,
         @NotBlank

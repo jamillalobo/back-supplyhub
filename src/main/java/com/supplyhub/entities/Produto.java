@@ -1,4 +1,4 @@
-package com.exemplo.produtos.model;
+package com.supplyhub.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

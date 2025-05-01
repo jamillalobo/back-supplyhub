@@ -3,7 +3,6 @@ package com.supplyhub.controllers;
 import com.supplyhub.dto.employee.*;
 import com.supplyhub.entities.Employee;
 import com.supplyhub.services.EmployeeService;
-import com.supplyhub.services.UserRegistrationService;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -27,14 +26,14 @@ public class EmployeeController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity create(@RequestBody @Valid CreateDataEmployee data, UriComponentsBuilder uriBuilder) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity create(@RequestBody @Valid CreateDataEmployeeDto data, UriComponentsBuilder uriBuilder) throws MessagingException, UnsupportedEncodingException {
         Employee created = employeeService.createEmployee(data);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DetailsDataEmployee> findById(@PathVariable Long id) {
-        DetailsDataEmployee employee = employeeService.findById(id);
+    public ResponseEntity<DetailsDataEmployeeDto> findById(@PathVariable Long id) {
+        DetailsDataEmployeeDto employee = employeeService.findById(id);
         return ResponseEntity.ok(employee);
     }
 
@@ -45,8 +44,8 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDTO> update(@PathVariable Long id, @RequestBody @Valid UpdateDataEmployee data) {
-        EmployeeResponseDTO updated = employeeService.update(id, data);
+    public ResponseEntity<EmployeeResponseDto> update(@PathVariable Long id, @RequestBody @Valid UpdateDataEmployee data) {
+        EmployeeResponseDto updated = employeeService.update(id, data);
         return ResponseEntity.ok(updated);
     }
 

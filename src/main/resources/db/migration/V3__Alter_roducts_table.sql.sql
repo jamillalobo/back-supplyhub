@@ -1,0 +1,1 @@
+ALTER TABLE products ADD CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES users(id);

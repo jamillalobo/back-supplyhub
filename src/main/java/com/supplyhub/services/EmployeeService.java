@@ -6,18 +6,12 @@ import com.supplyhub.entities.Employee;
 import com.supplyhub.repositories.EmployeeRepository;
 import com.supplyhub.repositories.UserRepository;
 import com.supplyhub.utils.EmailService;
-import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -36,17 +30,17 @@ public class EmployeeService {
     @Autowired
     private EmailService emailService;
 
-    public Employee createEmployee(CreateDataEmployee data) {
+    public Employee createEmployee(CreateDataEmployeeDto data) {
         Employee employee = new Employee(data);
         employee.setPassword(passwordEncoder.encode(data.password()));
         return userRepository.save(employee);
 //        emailService.sendMail(employee);
     }
 
-    public DetailsDataEmployee findById(Long id) {
+    public DetailsDataEmployeeDto findById(Long id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
-        return DetailsDataEmployee.fromEmployee(employee);
+        return DetailsDataEmployeeDto.fromEmployee(employee);
     }
 
 
@@ -57,7 +51,7 @@ public class EmployeeService {
                 .toList();
     }
 
-    public EmployeeResponseDTO update(Long id, UpdateDataEmployee data) {
+    public EmployeeResponseDto update(Long id, UpdateDataEmployee data) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
 
@@ -65,7 +59,7 @@ public class EmployeeService {
         employee.setPassword(data.password());
 
         Employee updated = employeeRepository.save(employee);
-        return new EmployeeResponseDTO(updated);
+        return new EmployeeResponseDto(updated);
     }
 
     public void delete(Long id) {
