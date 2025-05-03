@@ -1,4 +1,4 @@
-package com.supplyhub.config;
+package com.supplyhub.infra;
 
 public class ValidationExceptions extends RuntimeException {
     public ValidationExceptions(String message) {

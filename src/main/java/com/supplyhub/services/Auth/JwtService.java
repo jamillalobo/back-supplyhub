@@ -1,4 +1,4 @@
-package com.supplyhub.services;
+package com.supplyhub.services.Auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;

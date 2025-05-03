@@ -38,13 +38,13 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ListDataEmployees>> findAll() {
-        List<ListDataEmployees> employees = employeeService.findAll();
+    public ResponseEntity<List<ListDataEmployeesDto>> findAll() {
+        List<ListDataEmployeesDto> employees = employeeService.findAll();
         return ResponseEntity.ok(employees);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDto> update(@PathVariable Long id, @RequestBody @Valid UpdateDataEmployee data) {
+    public ResponseEntity<EmployeeResponseDto> update(@PathVariable Long id, @RequestBody @Valid UpdateDataEmployeeData data) {
         EmployeeResponseDto updated = employeeService.update(id, data);
         return ResponseEntity.ok(updated);
     }

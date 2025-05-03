@@ -1,6 +1,7 @@
 package com.supplyhub.entities;
 
 
+import com.supplyhub.dto.user.CreateDataUserDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,6 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 public class User {
-
     public Long getId() {
         return id;
     }
@@ -49,6 +49,14 @@ public class User {
     @Column(name = "updated_at")
     @LastModifiedDate
     private Instant updatedAt;
+
+    public User(CreateDataUserDto request) {
+        this.setUsername(request.username());
+        this.setEmail(request.email());
+        this.setCpf(request.cpf());
+    }
+
+
 
     public String getEmail() {
         return email;
@@ -81,4 +89,6 @@ public class User {
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
+
+
 }
