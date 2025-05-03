@@ -1,6 +1,6 @@
-package com.supplyhub.config.exceptions;
+package com.supplyhub.infra.exceptions;
 
-import com.supplyhub.config.ValidationExceptions;
+import com.supplyhub.infra.ValidationExceptions;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

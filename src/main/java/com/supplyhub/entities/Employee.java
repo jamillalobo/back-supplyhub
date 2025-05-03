@@ -2,7 +2,7 @@ package com.supplyhub.entities;
 
 
 import com.supplyhub.dto.employee.CreateDataEmployeeDto;
-import com.supplyhub.dto.employee.UpdateDataEmployee;
+import com.supplyhub.dto.employee.UpdateDataEmployeeData;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 
@@ -25,7 +25,7 @@ public class Employee extends User {
     }
 
 
-    public void updateEmployee(UpdateDataEmployee data) {
+    public void updateEmployee(UpdateDataEmployeeData data) {
         if (data.username() != null) {
             setUsername(data.username());
         }

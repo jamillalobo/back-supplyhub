@@ -2,7 +2,7 @@ package com.supplyhub.dto.employee;
 
 import jakarta.validation.constraints.NotNull;
 
-public record UpdateDataEmployee(
+public record UpdateDataEmployeeData(
         @NotNull
         Long id,
         String username,

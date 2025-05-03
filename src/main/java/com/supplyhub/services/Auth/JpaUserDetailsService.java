@@ -1,4 +1,4 @@
-package com.supplyhub.services;
+package com.supplyhub.services.Auth;
 
 import com.supplyhub.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

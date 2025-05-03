@@ -2,13 +2,13 @@ package com.supplyhub.dto.employee;
 
 import com.supplyhub.entities.Employee;
 
-public record ListDataEmployees(
+public record ListDataEmployeesDto(
         Long id,
         String username,
         String email,
         String cpf
 ) {
-    public ListDataEmployees(Employee employee) {
+    public ListDataEmployeesDto(Employee employee) {
         this(employee.getId(), employee.getUsername(), employee.getEmail(), employee.getCpf());
     }
 }

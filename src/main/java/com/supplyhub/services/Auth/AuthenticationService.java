@@ -1,7 +1,7 @@
-package com.supplyhub.services;
+package com.supplyhub.services.Auth;
 
-import com.supplyhub.dto.AuthenticationRequestDto;
-import com.supplyhub.dto.AuthenticationResponseDto;
+import com.supplyhub.dto.auth.AuthenticationRequestDto;
+import com.supplyhub.dto.auth.AuthenticationResponseDto;
 import com.supplyhub.entities.User;
 import com.supplyhub.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

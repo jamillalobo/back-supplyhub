@@ -1,9 +1,9 @@
-package com.supplyhub.config;
+package com.supplyhub.infra.security;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.supplyhub.services.JwtService;
+import com.supplyhub.services.Auth.JwtService;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;

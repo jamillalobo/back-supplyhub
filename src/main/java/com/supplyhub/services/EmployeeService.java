@@ -44,14 +44,14 @@ public class EmployeeService {
     }
 
 
-    public List<ListDataEmployees> findAll() {
+    public List<ListDataEmployeesDto> findAll() {
         List<Employee> employees = employeeRepository.findAll();
         return employees.stream()
-                .map(ListDataEmployees::new)
+                .map(ListDataEmployeesDto::new)
                 .toList();
     }
 
-    public EmployeeResponseDto update(Long id, UpdateDataEmployee data) {
+    public EmployeeResponseDto update(Long id, UpdateDataEmployeeData data) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
 
