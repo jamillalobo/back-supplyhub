@@ -55,8 +55,6 @@ public class User {
         this.setCpf(request.cpf());
     }
 
-
-
     public String getEmail() {
         return email;
     }

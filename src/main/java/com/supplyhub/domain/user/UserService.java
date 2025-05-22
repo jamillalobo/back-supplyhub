@@ -1,5 +1,6 @@
 package com.supplyhub.domain.user;
 
+import com.supplyhub.domain.manager.Manager;
 import com.supplyhub.domain.user.dto.CreateDataUserDto;
 import com.supplyhub.domain.user.dto.UserProfileDto;
 import com.supplyhub.domain.user.dto.UserResponseDto;
@@ -39,11 +40,11 @@ public class UserService {
                     "Username or Email already exists");
         }
 
-        User user = new User(request);
-        user.setPassword(passwordEncoder.encode(request.password()));
+        Manager manager = new Manager(request);
+        manager.setPassword(passwordEncoder.encode(request.password()));
 
-        userRepository.save(user);
+        userRepository.save(manager);
 
-        return UserResponseDto.fromUser(user);
+        return UserResponseDto.fromUser(manager);
     }
 }
