@@ -1,6 +1,6 @@
 package com.supplyhub.utils;
 
-import com.supplyhub.entities.Employee;
+import com.supplyhub.domain.employee.Employee;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
