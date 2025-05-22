@@ -3,16 +3,15 @@ package com.supplyhub.domain.product;
 import com.supplyhub.domain.product.dto.CreateProductDataDto;
 import com.supplyhub.domain.employee.Employee;
 import com.supplyhub.domain.employee.EmployeeRepository;
-import com.supplyhub.domain.product.dto.DispatchProductRequestDto;
 import com.supplyhub.domain.product.dto.ListDataProductsDto;
-import com.supplyhub.domain.product.dto.ProductResponseDto;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.Date;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -31,46 +30,33 @@ public class ProductService {
         }
         Product product = new Product(productData, employee);
         productRepository.save(product);
+
+
         return product;
     }
 
+    @Transactional
+    public void dispatchProducts(List<Long> productIds) {
+        productRepository.findAllById(productIds)
+                .forEach(product -> {
+                    product.setStatus("EXPEDIDO");
+                    product.setDispatchedDate(Date.from(Instant.now()));
+                    productRepository.save(product);
+                });
+    }
 
     public List<ListDataProductsDto> getDispatchedProducts() {
-        List<Product> dispatchedProducts = productRepository.findByIsDispatchedTrue();
-        return dispatchedProducts.stream()
+        return productRepository.findByStatus("EXPEDIDO")
+                .stream()
                 .map(ListDataProductsDto::new)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<ListDataProductsDto> getReceivedProducts() {
-        List<Product> receivedProducts = productRepository.findByIsDispatchedFalse();
-        return receivedProducts.stream()
+        return productRepository.findByStatus("RECEBIDO")
+                .stream()
                 .map(ListDataProductsDto::new)
-                .toList();
-    }
-
-    @Transactional
-    public ProductResponseDto dispatchProduct(Long productId, DispatchProductRequestDto dispatchData) {
-        // Find the product by ID or throw an exception if not found
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
-
-        // Optional: Check if the product is already dispatched
-        if (product.isDispatched()) {
-            // You can choose to throw an error or allow updating destination/date again
-            throw new IllegalStateException("Product with id: " + productId + " is already dispatched.");
-        }
-
-        // Update product fields for dispatch
-        product.setDispatched(true);
-        product.setDispatchedDate(new Date()); // Set current date and time for dispatch
-        product.setDestination(dispatchData.destination());
-
-        // Save the updated product
-        Product dispatchedProduct = productRepository.save(product);
-
-        // Return a DTO of the updated product
-        return new ProductResponseDto(dispatchedProduct);
+                .collect(Collectors.toList());
     }
 
 }

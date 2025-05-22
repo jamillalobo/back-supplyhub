@@ -33,24 +33,33 @@ public class Product {
     @Column(name = "fabrication_date", nullable = false)
     private LocalDate fabricationDate;
 
+    @Column(name = "received_date", nullable = false)
+    private LocalDate receivedDate;
+
     @Column(name = "expired_date", nullable = false)
     private LocalDate expiredDate;
-
-    @Column(name = "destination", nullable = true)
-    private String destination;
 
     @Column(name = "dispatched_date", nullable = true)
     private Date dispatchedDate;
 
-    @Column(name = "is_dispatched", nullable = false)
-    private boolean isDispatched;
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "peso", nullable = false)
+    private float peso;
+
+    @Column(name = "type_peso", nullable = false)
+    private String typePeso;
 
     public Product(CreateProductDataDto productData, Employee employee) {
         this.setProductName(productData.productName());
+        this.setEmployee(employee);
+        this.setReceivedDate(productData.receivedDate());
         this.setFabricationDate(productData.fabricationDate());
         this.setExpiredDate(productData.expiredDate());
-        this.isDispatched = false;
-        this.setEmployee(employee);
+        this.setPeso(productData.peso());
+        this.setTypePeso(productData.typePeso());
+        this.status = "RECEBIDO";
     }
 
     public String getProductName() {

@@ -3,6 +3,7 @@ package com.supplyhub.domain.employee;
 
 import com.supplyhub.domain.employee.dto.*;
 import com.supplyhub.domain.user.UserRepository;
+import com.supplyhub.domain.user.dto.CreateDataUserDto;
 import com.supplyhub.utils.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class EmployeeService {
     @Autowired
     private EmailService emailService;
 
-    public Employee createEmployee(CreateDataEmployeeDto data) {
+    public Employee createEmployee(CreateDataUserDto data) {
         Employee employee = new Employee(data);
         employee.setPassword(passwordEncoder.encode(data.password()));
         return userRepository.save(employee);

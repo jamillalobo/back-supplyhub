@@ -2,6 +2,7 @@ package com.supplyhub.domain.employee;
 
 import com.supplyhub.domain.employee.dto.*;
 import com.supplyhub.domain.employee.dto.UpdateDataEmployeeData;
+import com.supplyhub.domain.user.dto.CreateDataUserDto;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -23,9 +24,10 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
+
     @PostMapping
     @Transactional
-    public ResponseEntity create(@RequestBody @Valid CreateDataEmployeeDto data, UriComponentsBuilder uriBuilder) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity create(@RequestBody @Valid CreateDataUserDto data, UriComponentsBuilder uriBuilder) throws MessagingException, UnsupportedEncodingException {
         Employee created = employeeService.createEmployee(data);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
