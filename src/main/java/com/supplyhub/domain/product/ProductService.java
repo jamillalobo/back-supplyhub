@@ -4,6 +4,7 @@ import com.supplyhub.domain.product.dto.CreateProductDataDto;
 import com.supplyhub.domain.employee.Employee;
 import com.supplyhub.domain.employee.EmployeeRepository;
 import com.supplyhub.domain.product.dto.ListDataProductsDto;
+import com.supplyhub.domain.product.dto.ListDispatchedProductsDto;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,10 +46,10 @@ public class ProductService {
                 });
     }
 
-    public List<ListDataProductsDto> getDispatchedProducts() {
+    public List<ListDispatchedProductsDto> getDispatchedProducts() {
         return productRepository.findByStatus("EXPEDIDO")
                 .stream()
-                .map(ListDataProductsDto::new)
+                .map(ListDispatchedProductsDto::new)
                 .collect(Collectors.toList());
     }
 

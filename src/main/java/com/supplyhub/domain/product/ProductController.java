@@ -2,6 +2,7 @@ package com.supplyhub.domain.product;
 
 import com.supplyhub.domain.product.dto.CreateProductDataDto;
 import com.supplyhub.domain.product.dto.ListDataProductsDto;
+import com.supplyhub.domain.product.dto.ListDispatchedProductsDto;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,8 +36,8 @@ public class ProductController {
     }
 
     @GetMapping("/dispatched")
-    public ResponseEntity<List<ListDataProductsDto>> getDispatchedProducts() {
-        List<ListDataProductsDto> dispatchedProducts = productService.getDispatchedProducts();
+    public ResponseEntity<List<ListDispatchedProductsDto>> getDispatchedProducts() {
+        List<ListDispatchedProductsDto> dispatchedProducts = productService.getDispatchedProducts();
         return ResponseEntity.ok(dispatchedProducts);
     }
 
