@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
-        @Autowired
-        private ProductRepository productRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -29,9 +29,9 @@ public class ProductService {
         if (employee == null) {
             throw new RuntimeException("Funcionario não encontrado!");
         }
+
         Product product = new Product(productData, employee);
         productRepository.save(product);
-
 
         return product;
     }
@@ -45,7 +45,7 @@ public class ProductService {
                     productRepository.save(product);
                 });
     }
-
+    
     public List<ListDispatchedProductsDto> getDispatchedProducts() {
         return productRepository.findByStatus("EXPEDIDO")
                 .stream()
