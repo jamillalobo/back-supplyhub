@@ -1,129 +1,65 @@
-name: CI/CD Spring Boot and PostgreSQL to AWS EC2
+script: |
+  echo "Conectado à instância EC2: ${{ secrets.EC2_HOST }}"
+  echo "Preparando ambiente Docker..."
 
-on:
-  push:
-    branches:
-      - main
+  NETWORK_NAME="my-supplyhub-network"
+  DB_CONTAINER_NAME="my-postgres-db"
+  DB_IMAGE="postgres:13-alpine"
+  DB_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}"
+  DB_USER="supplyhub"
+  DB_NAME="supplyhubdb"
 
-env:
-  JAVA_VERSION: '17'
-  ECR_REPOSITORY_NAME: 'supplyhub-repo'
+  APP_CONTAINER_NAME="spring-boot-app-container"
+  APP_IMAGE_URI="${{ secrets.ECR_REPOSITORY_URI }}:latest"
+  APP_PORT_INTERNAL="8080"
+  APP_PORT_HOST="80"
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    environment: production
+  # Criar rede Docker se não existir
+  if ! sudo docker network ls | grep -q "$NETWORK_NAME"; then
+    echo "Criando rede Docker: $NETWORK_NAME"
+    sudo docker network create $NETWORK_NAME
+  fi
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  echo "Puxando imagem do PostgreSQL..."
+  sudo docker pull $DB_IMAGE
 
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
-          cache: 'maven'
+  echo "Puxando nova imagem Docker da aplicação Spring Boot..."
+  sudo docker pull $APP_IMAGE_URI
 
-      - name: Build Spring Boot application with Maven
-        run: mvn clean install -DskipTests
+  echo "Removendo container antigo do banco, se existir..."
+  if sudo docker ps -a --filter "name=$DB_CONTAINER_NAME" --format "{{.ID}}" | grep -q .; then
+    sudo docker stop $DB_CONTAINER_NAME
+    sudo docker rm $DB_CONTAINER_NAME
+  fi
 
-      - name: Get JAR file name
-        id: get_jar_name
-        run: echo "JAR_FILE_NAME=$(find target -name "*.jar" -print -quit | xargs basename)" >> $GITHUB_OUTPUT
+  echo "Rodando novo container do banco..."
+  sudo docker run -d \
+    --name $DB_CONTAINER_NAME \
+    --network $NETWORK_NAME \
+    -e POSTGRES_DB=$DB_NAME \
+    -e POSTGRES_USER=$DB_USER \
+    -e POSTGRES_PASSWORD=$DB_PASSWORD \
+    -p 5432:5432 \
+    $DB_IMAGE
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+  echo "Aguardando banco inicializar..."
+  sleep 20
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+  echo "Removendo container antigo da aplicação, se existir..."
+  if sudo docker ps -a --filter "name=$APP_CONTAINER_NAME" --format "{{.ID}}" | grep -q .; then
+    sudo docker stop $APP_CONTAINER_NAME
+    sudo docker rm $APP_CONTAINER_NAME
+  fi
 
-      - name: Build and push Docker image to ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
-          IMAGE_TAG: latest
-        run: |
-          # Constrói a imagem Docker da sua aplicação usando o Dockerfile na raiz
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          # Envia a imagem para o ECR
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  echo "Subindo nova aplicação com imagem atualizada..."
+  sudo docker run --pull always -d \
+    --name $APP_CONTAINER_NAME \
+    --network $NETWORK_NAME \
+    -p $APP_PORT_HOST:$APP_PORT_INTERNAL \
+    -e SPRING_DATASOURCE_URL=jdbc:postgresql://$DB_CONTAINER_NAME:5432/$DB_NAME \
+    -e SPRING_DATASOURCE_USERNAME=$DB_USER \
+    -e SPRING_DATASOURCE_PASSWORD=$DB_PASSWORD \
+    $APP_IMAGE_URI
 
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "Conectado à instância EC2: ${{ secrets.EC2_HOST }}"
-            echo "Preparando ambiente Docker..."
-
-            NETWORK_NAME="my-supplyhub-network"
-
-            if ! sudo docker network ls | grep -q "$NETWORK_NAME"; then
-              echo "Criando rede Docker: $NETWORK_NAME"
-              sudo docker network create $NETWORK_NAME
-            fi
-
-            DB_CONTAINER_NAME="my-postgres-db" 
-            DB_IMAGE="postgres:13-alpine"    
-            DB_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}" 
-            DB_USER="postgres"              
-            DB_NAME="supplyhubdb"            
-
-            echo "Puxando imagem do PostgreSQL..."
-            sudo docker pull $DB_IMAGE
-
-            if sudo docker ps -a --filter "name=$DB_CONTAINER_NAME" --format "{{.ID}}" | grep -q .; then
-              echo "Parando e removendo contêiner DB existente: $DB_CONTAINER_NAME"
-              sudo docker stop $DB_CONTAINER_NAME
-              sudo docker rm $DB_CONTAINER_NAME
-            fi
-
-            echo "Rodando contêiner PostgreSQL: $DB_CONTAINER_NAME"
-            sudo docker run -d \
-              --name $DB_CONTAINER_NAME \
-              --network $NETWORK_NAME \
-              -e POSTGRES_DB=$DB_NAME \       
-              -e POSTGRES_USER=$DB_USER \     
-              -e POSTGRES_PASSWORD=$DB_PASSWORD \
-              -p 5432:5432 \                  
-              $DB_IMAGE
-
-            echo "Aguardando 20 segundos para o PostgreSQL iniciar completamente..."
-            sleep 20 
-
-            APP_CONTAINER_NAME="spring-boot-app-container" 
-            APP_IMAGE_URI="${{ secrets.ECR_REPOSITORY_URI }}:latest" 
-            APP_PORT_INTERNAL="8080" # Porta interna que sua aplicação Spring Boot escuta
-            APP_PORT_HOST="80"       # Porta na EC2 que você quer que a aplicação responda 
-
-            echo "Puxando nova imagem Docker da aplicação Spring Boot..."
-            sudo docker pull $APP_IMAGE_URI
-
-            if sudo docker ps -a --filter "name=$APP_CONTAINER_NAME" --format "{{.ID}}" | grep -q .; then
-              echo "Parando e removendo contêiner da aplicação existente: $APP_CONTAINER_NAME"
-              sudo docker stop $APP_CONTAINER_NAME
-              sudo docker rm $APP_CONTAINER_NAME
-            fi
-
-            echo "Rodando novo contêiner da aplicação: $APP_CONTAINER_NAME com imagem $APP_IMAGE_URI"
-            sudo docker run -d \
-              --name $APP_CONTAINER_NAME \
-              --network $NETWORK_NAME \
-              -p $APP_PORT_HOST:$APP_PORT_INTERNAL \
-              -e SPRING_DATASOURCE_URL=jdbc:postgresql://$DB_CONTAINER_NAME:5432/$DB_NAME \
-              -e SPRING_DATASOURCE_USERNAME=$DB_USER \
-              -e SPRING_DATASOURCE_PASSWORD=$DB_PASSWORD \
-              $APP_IMAGE_URI
-
-            echo "Deploy de ambos os contêineres (Spring Boot e PostgreSQL) concluído com sucesso!"
-
-            echo "Limpando imagens Docker não utilizadas..."
-            sudo docker system prune -f
+  echo "Limpeza de imagens Docker não utilizadas..."
+  sudo docker system prune -f
