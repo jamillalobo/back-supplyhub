@@ -116,11 +116,11 @@ jobs:
             echo "Rodando novo contêiner da aplicação: $APP_CONTAINER_NAME com imagem $APP_IMAGE_URI"
             sudo docker run -d \
               --name $APP_CONTAINER_NAME \
-              --network $NETWORK_NAME \ 
-              -p $APP_PORT_HOST:$APP_PORT_INTERNAL \ 
-              -e SPRING_DATASOURCE_URL="jdbc:postgresql://$DB_CONTAINER_NAME:5432/$DB_NAME" \ 
-              -e SPRING_DATASOURCE_USERNAME="$DB_USER" \ 
-              -e SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \ 
+              --network $NETWORK_NAME \
+              -p $APP_PORT_HOST:$APP_PORT_INTERNAL \
+              -e SPRING_DATASOURCE_URL=jdbc:postgresql://$DB_CONTAINER_NAME:5432/$DB_NAME \
+              -e SPRING_DATASOURCE_USERNAME=$DB_USER \
+              -e SPRING_DATASOURCE_PASSWORD=$DB_PASSWORD \
               $APP_IMAGE_URI
 
             echo "Deploy de ambos os contêineres (Spring Boot e PostgreSQL) concluído com sucesso!"
