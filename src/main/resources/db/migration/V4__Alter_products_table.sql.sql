@@ -1,0 +1,21 @@
+ALTER TABLE products
+ADD COLUMN peso FLOAT,
+ADD COLUMN status VARCHAR(255),
+ADD COLUMN type_peso VARCHAR(255),
+ADD COLUMN received_date DATE;
+
+ALTER TABLE products
+DROP COLUMN is_dispatched,
+DROP COLUMN destination;
+
+ALTER TABLE products
+ALTER COLUMN peso SET NOT NULL;
+
+ALTER TABLE products
+ALTER COLUMN status SET NOT NULL;
+
+ALTER TABLE products
+ALTER COLUMN type_peso SET NOT NULL;
+
+ALTER TABLE products
+ALTER COLUMN received_date SET NOT NULL;
