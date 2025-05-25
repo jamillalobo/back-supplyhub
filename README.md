@@ -36,3 +36,44 @@ git clone https://github.com/jamillalobo/back-supplyhub.git
 - Jamilla Soares Lobo
 - Lucas Antônio Deodato
 - Luis Henrique Facunde da Silva
+
+# Pré requisitos pra testar
+- Instalar Java 17 
+- Instalar Maven (versão 3.9.9 - link: https://maven.apache.org/download.cgi)
+- Instalar Docker desktop
+- Instalar Insomnia (pra testar as requests)
+
+# Como testar
+1. Com todos os programas anteriores instalados, dê um push na branch `feat/register-user`
+2. Modifique no arquivo `aplication.properties` as propriedades que conectam a aplicação spring boot com o banco no docker 
+3. Crie uma pasta `jwt` no `resources`
+4. No terminal, vá para essa pasta e rode os 2 comandos `openssl` abaixo:
+```
+cd src/main/resources/jwt
+openssl genpkey -algorithm RSA -out app.key -outform PEM
+openssl rsa -pubout -in app.key -out app.pub
+```
+5. Verifique se foi criado os arquivos `app.hub` e `app.key` na pasta `jwt` de `resources`
+6. No terminal do Intellij, rode esse comando (para criar a imagem do DB no docker):
+```
+docker compose up --build
+
+obs: importante ter o docker desktop aberto pra esse comando funcionar
+```
+7. Rode o projeto, se tudo der certo, algo como essas mensagens vão aparecer:
+```
+Tomcat started on port 8080 (http) with context path '/'
+Started SupplyHubApplication in 7.414 seconds (process running for 8.03)
+```
+8. No postman, insominia ou qualquer outro aplicativo para testar requests, teste as requestes dessa forma:
+```
+Register a new user:
+curl -X POST http://localhost:8080/api/auth/register -H "Content-Type: application/json" -d ‘{"username": "testuser", "email": "[test@example.com](mailto:test@example.com)", "password": "password123"}’
+
+Log in and get a JWT token:
+curl -X POST http://localhost:8080/api/auth/login -H "Content-Type: application/json" -d {"username" : "testuser", "password": "password123"}
+
+Access the user profile (protected endpoint):
+curl -X GET http://localhost:8080/api/user/me 
+-H “Authorization: Bearer <JWT_TOKEN>”
+```
