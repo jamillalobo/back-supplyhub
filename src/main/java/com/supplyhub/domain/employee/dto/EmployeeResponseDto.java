@@ -2,6 +2,9 @@ package com.supplyhub.domain.employee.dto;
 
 import com.supplyhub.domain.employee.Employee;
 
+import lombok.Data;
+
+@Data
 public class EmployeeResponseDto {
     private Long id;
     private String username;
