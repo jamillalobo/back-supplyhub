@@ -19,8 +19,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public AuthenticationResponseDto authenticate(
             final AuthenticationRequestDto request) {
