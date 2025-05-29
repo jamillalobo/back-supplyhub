@@ -114,14 +114,16 @@ jobs:
             fi
           
             echo "Subindo nova aplicação com imagem atualizada..."
+            SPRING_DATASOURCE_URL_VALUE="jdbc:postgresql://${DB_CONTAINER_NAME}:5432/${DB_NAME}"
+            
             sudo docker run --pull always -d \
               --name $APP_CONTAINER_NAME \
               --network $NETWORK_NAME \
               -p $APP_PORT_HOST:$APP_PORT_INTERNAL \
-              -e SPRING_DATASOURCE_URL=postgresql://my-postgres-db:5432/supplyhubdb \
+              -e SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL_VALUE \
               -e SPRING_DATASOURCE_USERNAME=$DB_USER \
               -e SPRING_DATASOURCE_PASSWORD=$DB_PASSWORD \
-              $APP_IMAGE_URI
+            $APP_IMAGE_URI
           
             echo "Limpeza de imagens Docker não utilizadas..."
             sudo docker system prune -f
