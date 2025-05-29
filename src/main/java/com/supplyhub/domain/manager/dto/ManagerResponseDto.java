@@ -2,6 +2,8 @@ package com.supplyhub.domain.manager.dto;
 
 import com.supplyhub.domain.manager.Manager;
 
+import lombok.Data;
+@Data
 public class ManagerResponseDto {
     private Long id;
     private String username;
