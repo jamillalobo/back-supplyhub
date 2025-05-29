@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public record ListDataProductsDto(
+        Long id,
         String productName,
         String employee,
         LocalDate fabricationDate,
@@ -16,6 +17,6 @@ public record ListDataProductsDto(
         String typePeso
 ) {
     public ListDataProductsDto(Product product) {
-        this(product.getProductName(), product.getEmployee().getUsername(), product.getFabricationDate(), product.getExpiredDate(), product.getReceivedDate(), product.getPeso(), product.getTypePeso());
+        this(product.getId(), product.getProductName(), product.getEmployee().getUsername(), product.getFabricationDate(), product.getExpiredDate(), product.getReceivedDate(), product.getPeso(), product.getTypePeso());
     }
 }

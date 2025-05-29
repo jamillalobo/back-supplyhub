@@ -5,7 +5,8 @@ import com.supplyhub.domain.product.Product;
 import java.time.LocalDate;
 import java.util.Date;
 
-public record ListDispatchedProductsDto(String productName,
+public record ListDispatchedProductsDto(Long id,
+                                        String productName,
                                         String employee,
                                         LocalDate fabricationDate,
                                         LocalDate expiredDate,
@@ -14,7 +15,7 @@ public record ListDispatchedProductsDto(String productName,
                                         String typePeso
 ) {
     public ListDispatchedProductsDto(Product product) {
-        this(product.getProductName(), product.getEmployee().getUsername(), product.getFabricationDate(), product.getExpiredDate(), product.getDispatchedDate(), product.getPeso(), product.getTypePeso());
+        this(product.getId(), product.getProductName(), product.getEmployee().getUsername(), product.getFabricationDate(), product.getExpiredDate(), product.getDispatchedDate(), product.getPeso(), product.getTypePeso());
     }
 }
 
