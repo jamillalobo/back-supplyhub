@@ -8,7 +8,7 @@ on:
 env:
   JAVA_VERSION: '17'
   DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-  DOCKER_HUB_REPOSITORY: 'supplyhub-repo' # Nome do seu repositório no Docker Hub
+  DOCKER_HUB_REPOSITORY: 'supplyhub-repo'  # Nome fixo do repositório no Docker Hub
 
 jobs:
   build-and-deploy:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Get JAR file name
         id: get_jar_name
-        run: echo "JAR_FILE_NAME=$(find target -name "*.jar" -print -quit | xargs basename)" >> $GITHUB_OUTPUT
+        run: echo "JAR_FILE_NAME=$(find target -name '*.jar' -print -quit | xargs basename)" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -64,18 +64,18 @@ jobs:
             DB_NAME="supplyhubdb"
 
             APP_CONTAINER_NAME="spring-boot-app-container"
-            APP_IMAGE_URI="$DOCKER_HUB_USERNAME/$DOCKER_HUB_REPOSITORY:latest"
+            # Aqui passamos o valor fixo completo da imagem para evitar problemas de variáveis vazias
+            APP_IMAGE_URI="${{ secrets.DOCKER_HUB_USERNAME }}/supplyhub-repo:latest"
             APP_PORT_INTERNAL="8080"
             APP_PORT_HOST="80"
 
-            # --- Operações com a rede Docker ---
+            # Criar rede Docker se não existir
             if ! sudo docker network ls | grep -q "$NETWORK_NAME"; then
               echo "Criando rede Docker: $NETWORK_NAME"
               sudo docker network create $NETWORK_NAME
             fi
 
-            # --- Operações com o container do Banco de Dados ---
-            echo "Parando e removendo container antigo do banco, se existir..."
+            # Banco: parar e remover se existir
             if sudo docker ps -a --filter "name=$DB_CONTAINER_NAME" --format "{{.ID}}" | grep -q .; then
               sudo docker stop $DB_CONTAINER_NAME
               sudo docker rm $DB_CONTAINER_NAME
@@ -97,8 +97,7 @@ jobs:
             echo "Aguardando banco inicializar..."
             sleep 10
 
-            # --- Operações com o container da Aplicação Spring Boot (Docker Hub) ---
-            echo "Parando e removendo container antigo da aplicação, se existir..."
+            # Aplicação: parar e remover se existir
             if sudo docker ps -a --filter "name=$APP_CONTAINER_NAME" --format "{{.ID}}" | grep -q .; then
               sudo docker stop $APP_CONTAINER_NAME
               sudo docker rm $APP_CONTAINER_NAME
@@ -107,9 +106,12 @@ jobs:
             echo "Puxando nova imagem Docker da aplicação Spring Boot do Docker Hub..."
             sudo docker pull $APP_IMAGE_URI
 
-            echo "Subindo nova aplicação com imagem atualizada do Docker Hub..."
             SPRING_DATASOURCE_URL_VALUE="jdbc:postgresql://${DB_CONTAINER_NAME}:5432/${DB_NAME}"
 
+            echo "Valor de APP_IMAGE_URI: '$APP_IMAGE_URI'"
+            echo "Valor de SPRING_DATASOURCE_URL_VALUE: '$SPRING_DATASOURCE_URL_VALUE'"
+
+            echo "Subindo nova aplicação com imagem atualizada do Docker Hub..."
             sudo docker run --pull always -d \
               --name $APP_CONTAINER_NAME \
               --network $NETWORK_NAME \
@@ -117,7 +119,7 @@ jobs:
               -e SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL_VALUE \
               -e SPRING_DATASOURCE_USERNAME=$DB_USER \
               -e SPRING_DATASOURCE_PASSWORD=$DB_PASSWORD \
-            $APP_IMAGE_URI
+              $APP_IMAGE_URI
 
             echo "Limpeza de imagens Docker não utilizadas..."
             sudo docker system prune -f
