@@ -70,9 +70,9 @@ jobs:
             DB_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}"
             DB_USER="supplyhub"
             DB_NAME="supplyhubdb"
-          
+            
             APP_CONTAINER_NAME="spring-boot-app-container"
-            APP_IMAGE_URI="${{ secrets.ECR_REPOSITORY_URI }}:latest"
+            APP_IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:latest"
             APP_PORT_INTERNAL="8080"
             APP_PORT_HOST="80"
           
