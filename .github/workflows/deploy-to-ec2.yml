@@ -63,37 +63,35 @@ jobs:
           script: |
             echo "Conectado à instância EC2: ${{ secrets.EC2_HOST }}"
             echo "Preparando ambiente Docker..."
-          
+
             NETWORK_NAME="my-supplyhub-network"
             DB_CONTAINER_NAME="my-postgres-db"
             DB_IMAGE="postgres:13-alpine"
             DB_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}"
             DB_USER="supplyhub"
             DB_NAME="supplyhubdb"
-          
+
             APP_CONTAINER_NAME="spring-boot-app-container"
-            APP_IMAGE_URI="${{ secrets.ECR_REPOSITORY_URI }}:latest"
+            APP_IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:latest"
             APP_PORT_INTERNAL="8080"
             APP_PORT_HOST="80"
-          
-            # Criar rede Docker se não existir
+
+            # --- Operações com a rede Docker ---
             if ! sudo docker network ls | grep -q "$NETWORK_NAME"; then
               echo "Criando rede Docker: $NETWORK_NAME"
               sudo docker network create $NETWORK_NAME
             fi
-          
-            echo "Puxando imagem do PostgreSQL..."
-            sudo docker pull $DB_IMAGE
-          
-            echo "Puxando nova imagem Docker da aplicação Spring Boot..."
-            sudo docker pull $APP_IMAGE_URI
-          
-            echo "Removendo container antigo do banco, se existir..."
+
+            # --- Operações com o container do Banco de Dados ---
+            echo "Parando e removendo container antigo do banco, se existir..."
             if sudo docker ps -a --filter "name=$DB_CONTAINER_NAME" --format "{{.ID}}" | grep -q .; then
               sudo docker stop $DB_CONTAINER_NAME
               sudo docker rm $DB_CONTAINER_NAME
             fi
-          
+
+            echo "Puxando imagem do PostgreSQL..."
+            sudo docker pull $DB_IMAGE
+
             echo "Rodando novo container do banco..."
             sudo docker run -d \
               --name $DB_CONTAINER_NAME \
@@ -103,19 +101,23 @@ jobs:
               -e POSTGRES_PASSWORD=$DB_PASSWORD \
               -p 5432:5432 \
               $DB_IMAGE
-          
+
             echo "Aguardando banco inicializar..."
-            sleep 20
-          
-            echo "Removendo container antigo da aplicação, se existir..."
+            sleep 10 # Reduzi o tempo inicial para verificar mais rápido
+
+            # --- Operações com o container da Aplicação Spring Boot ---
+            echo "Parando e removendo container antigo da aplicação, se existir..."
             if sudo docker ps -a --filter "name=$APP_CONTAINER_NAME" --format "{{.ID}}" | grep -q .; then
               sudo docker stop $APP_CONTAINER_NAME
               sudo docker rm $APP_CONTAINER_NAME
             fi
-          
+
+            echo "Puxando nova imagem Docker da aplicação Spring Boot..."
+            sudo docker pull $APP_IMAGE_URI
+
             echo "Subindo nova aplicação com imagem atualizada..."
             SPRING_DATASOURCE_URL_VALUE="jdbc:postgresql://${DB_CONTAINER_NAME}:5432/${DB_NAME}"
-            
+
             sudo docker run --pull always -d \
               --name $APP_CONTAINER_NAME \
               --network $NETWORK_NAME \
@@ -124,6 +126,6 @@ jobs:
               -e SPRING_DATASOURCE_USERNAME=$DB_USER \
               -e SPRING_DATASOURCE_PASSWORD=$DB_PASSWORD \
             $APP_IMAGE_URI
-          
+
             echo "Limpeza de imagens Docker não utilizadas..."
             sudo docker system prune -f
